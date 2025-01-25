@@ -2,7 +2,7 @@
 
 
 
-# indexing
+# index
 
 ##  Module Summary
   

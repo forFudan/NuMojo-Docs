@@ -6,7 +6,7 @@
 
 ##  Module Summary
   
-Implements basic object methods for working with N-Dimensional Array.
+Implements N-Dimensional Array
 ## NDArray
 
 ### NDArray Summary
@@ -42,8 +42,12 @@ The N-dimensional array (NDArray).
     - Size of NDArray.  
 * strides `NDArrayStrides`  
     - Contains offset, strides.  
-* flags `Dict[String, Bool]`  
-    - Information about the memory layout of the array.  
+* coefficient `NDArrayStrides`  
+    - Contains offset, coefficients for slicing.  
+* datatype `DType`  
+    - The datatype of memory.  
+* order `String`  
+    - Memory layout of array C (C order row major) or F (Fortran order col major).  
 
 ### Functions
 
@@ -96,7 +100,7 @@ Args:
 
 
 ```Mojo
-__init__(out self, shape: List[Int], offset: Int, strides: List[Int])
+__init__(out self, ndim: Int, offset: Int, size: Int, shape: List[Int], strides: List[Int], coefficient: List[Int], order: String = String("C"))
 ```  
 Summary  
   
@@ -105,25 +109,32 @@ Extremely specific NDArray initializer.
 Args:  
 
 - self
-- shape
+- ndim
 - offset
+- size
+- shape
 - strides
+- coefficient
+- order Default: String("C")
 
 
 ```Mojo
-__init__(out self, shape: NDArrayShape, ref buffer: UnsafePointer[SIMD[dtype, 1]], offset: Int, strides: NDArrayStrides)
+__init__(out self, data: UnsafePointer[SIMD[dtype, 1]], ndim: Int, offset: Int, shape: List[Int], strides: List[Int], coefficient: List[Int], order: String = String("C"))
 ```  
 Summary  
   
-  
+Extremely specific NDArray initializer.  
   
 Args:  
 
 - self
-- shape
-- buffer
+- data
+- ndim
 - offset
+- shape
 - strides
+- coefficient
+- order Default: String("C")
 
 #### __copyinit__
 
@@ -203,7 +214,7 @@ Example:
     `arr[1]` returns the second row of the array.
 
 ```Mojo
-__getitem__(self, index: Item) -> SIMD[dtype, 1]
+__getitem__(self, index: Idx) -> SIMD[dtype, 1]
 ```  
 Summary  
   
@@ -564,15 +575,10 @@ Args:
 
 
 Example:
-```mojo
-import numojo as nm
-var A = nm.random.rand[nm.i16](3, 2)
-var B = nm.random.rand[nm.i16](3)
-A[1:4] = B
-```
+    `arr[1]` returns the second row of the array.
 
 ```Mojo
-__setitem__(mut self, index: Item, val: SIMD[dtype, 1])
+__setitem__(mut self, index: Idx, val: SIMD[dtype, 1])
 ```  
 Summary  
   
@@ -586,21 +592,7 @@ Args:
 
 
 ```Mojo
-__setitem__(mut self, mask: NDArray[bool], value: SIMD[dtype, 1])
-```  
-Summary  
-  
-Set the value of the array at the indices where the mask is true.  
-  
-Args:  
-
-- self
-- mask
-- value
-
-
-```Mojo
-__setitem__(mut self, *slices: Slice, *, val: Self)
+__setitem__(mut self, owned *slices: Slice, *, val: Self)
 ```  
 Summary  
   
@@ -617,7 +609,7 @@ Example:
     `arr[1:3, 2:4]` returns the corresponding sliced array (2 x 2).
 
 ```Mojo
-__setitem__(mut self, slices: List[Slice], val: Self)
+__setitem__(mut self, owned slices: List[Slice], val: Self)
 ```  
 Summary  
   
@@ -631,54 +623,7 @@ Args:
 
 
 Example:
-```console
->>> var a = nm.arange[i8](16).reshape(Shape(4, 4))
-print(a)
-[[      0       1       2       3       ]
- [      4       5       6       7       ]
- [      8       9       10      11      ]
- [      12      13      14      15      ]]
-2-D array  Shape: [4, 4]  DType: int8  C-cont: True  F-cont: False  own data: True
->>> a[2:4, 2:4] = a[0:2, 0:2]
-print(a)
-[[      0       1       2       3       ]
- [      4       5       6       7       ]
- [      8       9       0       1       ]
- [      12      13      4       5       ]]
-2-D array  Shape: [4, 4]  DType: int8  C-cont: True  F-cont: False  own data: True
-```
-
-```Mojo
-__setitem__(mut self, *slices: Variant[Slice, Int], *, val: Self)
-```  
-Summary  
-  
-Get items by a series of either slices or integers.  
-  
-Args:  
-
-- self
-- \*slices
-- val
-
-
-Example:
-```console
->>> var a = nm.arange[i8](16).reshape(Shape(4, 4))
-print(a)
-[[      0       1       2       3       ]
- [      4       5       6       7       ]
- [      8       9       10      11      ]
- [      12      13      14      15      ]]
-2-D array  Shape: [4, 4]  DType: int8  C-cont: True  F-cont: False  own data: True
->>> a[0, Slice(2, 4)] = a[3, Slice(0, 2)]
-print(a)
-[[      0       1       12      13      ]
- [      4       5       6       7       ]
- [      8       9       10      11      ]
- [      12      13      14      15      ]]
-2-D array  Shape: [4, 4]  DType: int8  C-cont: True  F-cont: False  own data: True
-```
+    `arr[1:3, 2:4]` returns the corresponding sliced array (2 x 2).
 
 ```Mojo
 __setitem__(self, index: NDArray[index], val: NDArray[dtype])
@@ -741,7 +686,7 @@ __neg__(self) -> Self
 ```  
 Summary  
   
-Unary negative returns self unless boolean type.  
+Unary negative returens self unless boolean type.  
   
 Args:  
 
@@ -757,7 +702,7 @@ __pos__(self) -> Self
 ```  
 Summary  
   
-Unary positve returns self unless boolean type.  
+Unary positve returens self unless boolean type.  
   
 Args:  
 
@@ -771,7 +716,7 @@ __invert__(self) -> Self
 ```  
 Summary  
   
-Element-wise inverse (~ or not), only for bools and integral types.  
+Elementwise inverse (~ or not), only for bools and integral types.  
   
 Args:  
 
@@ -949,43 +894,7 @@ Args:
 
 
 ```Mojo
-__add__[OtherDType: DType, ResultDType: DType = result_type[::DType,::DType]()](self, other: SIMD[OtherDType, 1]) -> NDArray[ResultDType]
-```  
-Summary  
-  
-Enables `array + scalar`.  
-  
-Parameters:  
-
-- OtherDType
-- ResultDType Defualt: `result_type[::DType,::DType]()`
-  
-Args:  
-
-- self
-- other
-
-
-```Mojo
-__add__[OtherDType: DType, ResultDType: DType = result_type[::DType,::DType]()](self, other: NDArray[OtherDType]) -> NDArray[ResultDType]
-```  
-Summary  
-  
-Enables `array + array`.  
-  
-Parameters:  
-
-- OtherDType
-- ResultDType Defualt: `result_type[::DType,::DType]()`
-  
-Args:  
-
-- self
-- other
-
-
-```Mojo
-__add__(self, other: SIMD[dtype, 1]) -> Self
+__add__(mut self, other: SIMD[dtype, 1]) -> Self
 ```  
 Summary  
   
@@ -998,7 +907,7 @@ Args:
 
 
 ```Mojo
-__add__(self, other: Self) -> Self
+__add__(mut self, other: Self) -> Self
 ```  
 Summary  
   
@@ -1010,42 +919,6 @@ Args:
 - other
 
 #### __sub__
-
-
-```Mojo
-__sub__[OtherDType: DType, ResultDType: DType = result_type[::DType,::DType]()](self, other: SIMD[OtherDType, 1]) -> NDArray[ResultDType]
-```  
-Summary  
-  
-Enables `array - scalar`.  
-  
-Parameters:  
-
-- OtherDType
-- ResultDType Defualt: `result_type[::DType,::DType]()`
-  
-Args:  
-
-- self
-- other
-
-
-```Mojo
-__sub__[OtherDType: DType, ResultDType: DType = result_type[::DType,::DType]()](self, other: NDArray[OtherDType]) -> NDArray[ResultDType]
-```  
-Summary  
-  
-Enables `array - array`.  
-  
-Parameters:  
-
-- OtherDType
-- ResultDType Defualt: `result_type[::DType,::DType]()`
-  
-Args:  
-
-- self
-- other
 
 
 ```Mojo
@@ -1074,42 +947,6 @@ Args:
 - other
 
 #### __mul__
-
-
-```Mojo
-__mul__[OtherDType: DType, ResultDType: DType = result_type[::DType,::DType]()](self, other: SIMD[OtherDType, 1]) -> NDArray[ResultDType]
-```  
-Summary  
-  
-Enables `array * scalar`.  
-  
-Parameters:  
-
-- OtherDType
-- ResultDType Defualt: `result_type[::DType,::DType]()`
-  
-Args:  
-
-- self
-- other
-
-
-```Mojo
-__mul__[OtherDType: DType, ResultDType: DType = result_type[::DType,::DType]()](self, other: NDArray[OtherDType]) -> NDArray[ResultDType]
-```  
-Summary  
-  
-Enables `array * array`.  
-  
-Parameters:  
-
-- OtherDType
-- ResultDType Defualt: `result_type[::DType,::DType]()`
-  
-Args:  
-
-- self
-- other
 
 
 ```Mojo
@@ -1156,42 +993,6 @@ Args:
 
 
 ```Mojo
-__truediv__[OtherDType: DType, ResultDType: DType = result_type[::DType,::DType]()](self, other: SIMD[OtherDType, 1]) -> NDArray[ResultDType]
-```  
-Summary  
-  
-Enables `array / scalar`.  
-  
-Parameters:  
-
-- OtherDType
-- ResultDType Defualt: `result_type[::DType,::DType]()`
-  
-Args:  
-
-- self
-- other
-
-
-```Mojo
-__truediv__[OtherDType: DType, ResultDType: DType = result_type[::DType,::DType]()](self, other: NDArray[OtherDType]) -> NDArray[ResultDType]
-```  
-Summary  
-  
-Enables `array / array`.  
-  
-Parameters:  
-
-- OtherDType
-- ResultDType Defualt: `result_type[::DType,::DType]()`
-  
-Args:  
-
-- self
-- other
-
-
-```Mojo
 __truediv__(self, other: SIMD[dtype, 1]) -> Self
 ```  
 Summary  
@@ -1220,42 +1021,6 @@ Args:
 
 
 ```Mojo
-__floordiv__[OtherDType: DType, ResultDType: DType = result_type[::DType,::DType]()](self, other: SIMD[OtherDType, 1]) -> NDArray[ResultDType]
-```  
-Summary  
-  
-Enables `array // scalar`.  
-  
-Parameters:  
-
-- OtherDType
-- ResultDType Defualt: `result_type[::DType,::DType]()`
-  
-Args:  
-
-- self
-- other
-
-
-```Mojo
-__floordiv__[OtherDType: DType, ResultDType: DType = result_type[::DType,::DType]()](self, other: NDArray[OtherDType]) -> NDArray[ResultDType]
-```  
-Summary  
-  
-Enables `array // array`.  
-  
-Parameters:  
-
-- OtherDType
-- ResultDType Defualt: `result_type[::DType,::DType]()`
-  
-Args:  
-
-- self
-- other
-
-
-```Mojo
 __floordiv__(self, other: SIMD[dtype, 1]) -> Self
 ```  
 Summary  
@@ -1281,42 +1046,6 @@ Args:
 - other
 
 #### __mod__
-
-
-```Mojo
-__mod__[OtherDType: DType, ResultDType: DType = result_type[::DType,::DType]()](self, other: SIMD[OtherDType, 1]) -> NDArray[ResultDType]
-```  
-Summary  
-  
-Enables `array % scalar`.  
-  
-Parameters:  
-
-- OtherDType
-- ResultDType Defualt: `result_type[::DType,::DType]()`
-  
-Args:  
-
-- self
-- other
-
-
-```Mojo
-__mod__[OtherDType: DType, ResultDType: DType = result_type[::DType,::DType]()](self, other: NDArray[OtherDType]) -> NDArray[ResultDType]
-```  
-Summary  
-  
-Enables `array % array`.  
-  
-Parameters:  
-
-- OtherDType
-- ResultDType Defualt: `result_type[::DType,::DType]()`
-  
-Args:  
-
-- self
-- other
 
 
 ```Mojo
@@ -1376,25 +1105,7 @@ Args:
 
 
 ```Mojo
-__radd__[OtherDType: DType, ResultDType: DType = result_type[::DType,::DType]()](self, other: SIMD[OtherDType, 1]) -> NDArray[ResultDType]
-```  
-Summary  
-  
-Enables `scalar + array`.  
-  
-Parameters:  
-
-- OtherDType
-- ResultDType Defualt: `result_type[::DType,::DType]()`
-  
-Args:  
-
-- self
-- other
-
-
-```Mojo
-__radd__(mut self, other: SIMD[dtype, 1]) -> Self
+__radd__(mut self, rhs: SIMD[dtype, 1]) -> Self
 ```  
 Summary  
   
@@ -1403,93 +1114,39 @@ Enables `scalar + array`.
 Args:  
 
 - self
-- other
+- rhs
 
 #### __rsub__
 
 
 ```Mojo
-__rsub__[OtherDType: DType, ResultDType: DType = result_type[::DType,::DType]()](self, other: SIMD[OtherDType, 1]) -> NDArray[ResultDType]
+__rsub__(self, s: SIMD[dtype, 1]) -> Self
 ```  
 Summary  
   
 Enables `scalar - array`.  
-  
-Parameters:  
-
-- OtherDType
-- ResultDType Defualt: `result_type[::DType,::DType]()`
-  
-Args:  
-
-- self
-- other
-
-
-```Mojo
-__rsub__(mut self, other: SIMD[dtype, 1]) -> Self
-```  
-Summary  
-  
-Enables `scalar - array`.  
-  
-Args:  
-
-- self
-- other
-
-#### __rmul__
-
-
-```Mojo
-__rmul__[OtherDType: DType, ResultDType: DType = result_type[::DType,::DType]()](self, other: SIMD[OtherDType, 1]) -> NDArray[ResultDType]
-```  
-Summary  
-  
-Enables `scalar * array`.  
-  
-Parameters:  
-
-- OtherDType
-- ResultDType Defualt: `result_type[::DType,::DType]()`
-  
-Args:  
-
-- self
-- other
-
-
-```Mojo
-__rmul__(mut self, other: SIMD[dtype, 1]) -> Self
-```  
-Summary  
-  
-Enables `scalar * array`.  
-  
-Args:  
-
-- self
-- other
-
-#### __rtruediv__
-
-
-```Mojo
-__rtruediv__[OtherDType: DType, ResultDType: DType = result_type[::DType,::DType]()](self, s: SIMD[OtherDType, 1]) -> NDArray[ResultDType]
-```  
-Summary  
-  
-Enables `scalar / array`.  
-  
-Parameters:  
-
-- OtherDType
-- ResultDType Defualt: `result_type[::DType,::DType]()`
   
 Args:  
 
 - self
 - s
+
+#### __rmul__
+
+
+```Mojo
+__rmul__(self, s: SIMD[dtype, 1]) -> Self
+```  
+Summary  
+  
+Enables `scalar * array`.  
+  
+Args:  
+
+- self
+- s
+
+#### __rtruediv__
 
 
 ```Mojo
@@ -1508,25 +1165,7 @@ Args:
 
 
 ```Mojo
-__rfloordiv__[OtherDType: DType, ResultDType: DType = result_type[::DType,::DType]()](self, other: SIMD[OtherDType, 1]) -> NDArray[ResultDType]
-```  
-Summary  
-  
-Enables `scalar // array`.  
-  
-Parameters:  
-
-- OtherDType
-- ResultDType Defualt: `result_type[::DType,::DType]()`
-  
-Args:  
-
-- self
-- other
-
-
-```Mojo
-__rfloordiv__(self, other: SIMD[dtype, 1]) -> Self
+__rfloordiv__(self, s: SIMD[dtype, 1]) -> Self
 ```  
 Summary  
   
@@ -1535,7 +1174,7 @@ Enables `scalar // array`.
 Args:  
 
 - self
-- other
+- s
 
 #### __rmod__
 
@@ -1546,24 +1185,6 @@ __rmod__(mut self, other: SIMD[dtype, 1]) -> Self
 Summary  
   
 Enables `scalar % array`.  
-  
-Args:  
-
-- self
-- other
-
-
-```Mojo
-__rmod__[OtherDType: DType, ResultDType: DType = result_type[::DType,::DType]()](self, other: SIMD[OtherDType, 1]) -> NDArray[ResultDType]
-```  
-Summary  
-  
-Enables `scalar % array`.  
-  
-Parameters:  
-
-- OtherDType
-- ResultDType Defualt: `result_type[::DType,::DType]()`
   
 Args:  
 
@@ -1602,7 +1223,7 @@ Args:
 
 
 ```Mojo
-__isub__(mut self, other: SIMD[dtype, 1])
+__isub__(mut self, s: SIMD[dtype, 1])
 ```  
 Summary  
   
@@ -1611,11 +1232,11 @@ Enables `array -= scalar`.
 Args:  
 
 - self
-- other
+- s
 
 
 ```Mojo
-__isub__(mut self, other: Self)
+__isub__(mut self, s: Self)
 ```  
 Summary  
   
@@ -1624,13 +1245,13 @@ Enables `array -= array`.
 Args:  
 
 - self
-- other
+- s
 
 #### __imul__
 
 
 ```Mojo
-__imul__(mut self, other: SIMD[dtype, 1])
+__imul__(mut self, s: SIMD[dtype, 1])
 ```  
 Summary  
   
@@ -1639,11 +1260,11 @@ Enables `array *= scalar`.
 Args:  
 
 - self
-- other
+- s
 
 
 ```Mojo
-__imul__(mut self, other: Self)
+__imul__(mut self, s: Self)
 ```  
 Summary  
   
@@ -1652,7 +1273,7 @@ Enables `array *= array`.
 Args:  
 
 - self
-- other
+- s
 
 #### __itruediv__
 
@@ -1753,6 +1374,65 @@ Args:
 - self
 - p
 
+#### set
+
+
+```Mojo
+set(self, index: Int, val: SIMD[dtype, 1])
+```  
+Summary  
+  
+Linearly retreive a value from the underlying Pointer.  
+  
+Args:  
+
+- self
+- index
+- val
+
+
+Example:
+```console
+> Array.get(15)
+```
+returns the item of index 15 from the array's data buffer.
+
+Not that it is different from `item()` as `get` does not checked
+against C-order or F-order.
+```console
+> # A is a 3x3 matrix, F-order (column-major)
+> A.get(3)  # Row 0, Col 1
+> A.item(3)  # Row 1, Col 0
+```
+#### get
+
+
+```Mojo
+get(self, index: Int) -> SIMD[dtype, 1]
+```  
+Summary  
+  
+Linearly retreive a value from the underlying Pointer.  
+  
+Args:  
+
+- self
+- index
+
+
+Example:
+```console
+> Array.get(15)
+```
+returns the item of index 15 from the array's data buffer.
+
+Not that it is different from `item()` as `get` does not checked
+against C-order or F-order.
+```console
+> # A is a 3x3 matrix, F-order (column-major)
+> A.get(3)  # Row 0, Col 1
+> A.item(3)  # Row 1, Col 0
+```
 #### __int__
 
 
@@ -1853,7 +1533,7 @@ __len__(self) -> Int
 ```  
 Summary  
   
-Returns length of 0-th dimension.  
+  
   
 Args:  
 
@@ -1867,27 +1547,15 @@ __iter__(self) -> _NDArrayIter[self, dtype]
 ```  
 Summary  
   
-Iterate over elements of the NDArray and return sub-arrays as view.  
+Iterate over elements of the NDArray, returning copied value.  
   
 Args:  
 
 - self
 
 
-Example:
-```
->>> var a = nm.random.arange[nm.i8](2 * 3 * 4).reshape(nm.Shape(2, 3, 4))
->>> for i in a:
-...     print(i)
-[[      0       1       2       3       ]
- [      4       5       6       7       ]
- [      8       9       10      11      ]]
-2-D array  Shape: [3, 4]  DType: int8  C-cont: True  F-cont: False  own data: False
-[[      12      13      14      15      ]
- [      16      17      18      19      ]
- [      20      21      22      23      ]]
-2-D array  Shape: [3, 4]  DType: int8  C-cont: True  F-cont: False  own data: False
-```.
+Notes:
+    Need to add lifetimes after the new release.
 #### __reversed__
 
 
@@ -1995,39 +1663,11 @@ Args:
 
 
 ```Mojo
-load(self, owned index: Int) -> SIMD[dtype, 1]
-```  
-Summary  
-  
-Safely retrieve i-th item from the underlying buffer.  
-  
-Args:  
-
-- self
-- index
-
-
-`A.load(i)` differs from `A._buf.ptr[i]` due to boundary check.
-
-Example:
-```console
-> array.load(15)
-```
-returns the item of index 15 from the array's data buffer.
-
-Note that it does not checked against C-order or F-order.
-```console
-> # A is a 3x3 matrix, F-order (column-major)
-> A.load(3)  # Row 0, Col 1
-> A.item(3)  # Row 1, Col 0
-```
-
-```Mojo
 load[width: Int = 1](self, index: Int) -> SIMD[dtype, width]
 ```  
 Summary  
   
-Safely loads a SIMD element of size `width` at `index` from the underlying buffer.  
+Loads a SIMD element of size `width` at the given index `index`.  
   
 Parameters:  
 
@@ -2039,15 +1679,12 @@ Args:
 - index
 
 
-To bypass boundary checks, use `self._buf.ptr.load` directly.
-
-
 ```Mojo
-load[width: Int = 1](self, *indices: Int) -> SIMD[dtype, width]
+load[width: Int = 1](self, *index: Int) -> SIMD[dtype, width]
 ```  
 Summary  
   
-Safely loads SIMD element of size `width` at given variadic indices from the underlying buffer.  
+Loads a SIMD element of size `width` at given variadic indices argument.  
   
 Parameters:  
 
@@ -2056,44 +1693,17 @@ Parameters:
 Args:  
 
 - self
-- \*indices
-
-
-To bypass boundary checks, use `self._buf.ptr.load` directly.
+- \*index
 
 #### store
 
-
-```Mojo
-store(self, owned index: Int, val: SIMD[dtype, 1])
-```  
-Summary  
-  
-Safely store a scalar to i-th item of the underlying buffer.  
-  
-Args:  
-
-- self
-- index
-- val
-
-
-`A.store(i, a)` differs from `A._buf.ptr[i] = a` due to boundary check.
-
-Example:
-```console
-> array.store(15, val = 100)
-```
-sets the item of index 15 of the array's data buffer to 100.
-
-Note that it does not checked against C-order or F-order.
 
 ```Mojo
 store[width: Int](mut self, index: Int, val: SIMD[dtype, width])
 ```  
 Summary  
   
-Safely stores SIMD element of size `width` at `index` of the underlying buffer.  
+Stores the SIMD element of size `width` at index `index`.  
   
 Parameters:  
 
@@ -2106,15 +1716,12 @@ Args:
 - val
 
 
-To bypass boundary checks, use `self._buf.ptr.store` directly.
-
-
 ```Mojo
-store[width: Int = 1](mut self, *indices: Int, *, val: SIMD[dtype, width])
+store[width: Int = 1](mut self, *index: Int, *, val: SIMD[dtype, width])
 ```  
 Summary  
   
-Safely stores SIMD element of size `width` at given variadic indices of the underlying buffer.  
+Stores the SIMD element of size `width` at the given variadic indices argument.  
   
 Parameters:  
 
@@ -2123,11 +1730,8 @@ Parameters:
 Args:  
 
 - self
-- \*indices
+- \*index
 - val
-
-
-To bypass boundary checks, use `self._buf.ptr.store` directly.
 
 #### T
 
@@ -2239,7 +1843,7 @@ See `numojo.routines.sorting.argsort()`.
 
 
 ```Mojo
-astype[target: DType](self) -> NDArray[target]
+astype[type: DType](self) -> NDArray[type]
 ```  
 Summary  
   
@@ -2247,7 +1851,7 @@ Convert type of array.
   
 Parameters:  
 
-- target
+- type
   
 Args:  
 
@@ -2257,55 +1861,29 @@ Args:
 
 
 ```Mojo
-cumprod(self) -> Self
+cumprod(self) -> SIMD[dtype, 1]
 ```  
 Summary  
   
-Returns cumprod of all items of an array. The array is flattened before cumprod.  
+Cumulative product of a array.  
   
 Args:  
 
 - self
-
-
-```Mojo
-cumprod(self, axis: Int) -> Self
-```  
-Summary  
-  
-Returns cumprod of array by axis.  
-  
-Args:  
-
-- self
-- axis: Axis.
 
 #### cumsum
 
 
 ```Mojo
-cumsum(self) -> Self
+cumsum(self) -> SIMD[dtype, 1]
 ```  
 Summary  
   
-Returns cumsum of all items of an array. The array is flattened before cumsum.  
+Cumulative Sum of a array.  
   
 Args:  
 
 - self
-
-
-```Mojo
-cumsum(self, axis: Int) -> Self
-```  
-Summary  
-  
-Returns cumsum of array by axis.  
-  
-Args:  
-
-- self
-- axis: Axis.
 
 #### diagonal
 
@@ -2340,65 +1918,21 @@ Args:
 
 
 ```Mojo
-flatten(self, order: String = String("C")) -> Self
+flatten(mut self)
 ```  
 Summary  
   
-Return a copy of the array collapsed into one dimension.  
+Convert shape of array to one dimensional.  
   
 Args:  
 
 - self
-- order: A NDArray. Default: String("C")
 
 #### item
 
 
 ```Mojo
-item(self, owned index: Int) -> ref [MutableAnyOrigin] SIMD[dtype, 1]
-```  
-Summary  
-  
-Return the scalar at the coordinates.  
-  
-Args:  
-
-- self
-- index: Index of item, counted in row-major way.
-
-
-If one index is given, get the i-th item of the array (not buffer).
-It first scans over the first row, even it is a colume-major array.
-
-If more than one index is given, the length of the indices must match
-the number of dimensions of the array.
-
-Example:
-```console
->>> var A = nm.random.randn[nm.f16](2, 2, 2)
->>> A = A.reshape(A.shape, order="F")
->>> print(A)
-[[[     0.2446289       0.5419922       ]
-  [     0.09643555      -0.90722656     ]]
- [[     1.1806641       0.24389648      ]
-  [     0.5234375       1.0390625       ]]]
-3-D array  Shape: [2, 2, 2]  DType: float16  order: F
->>> for i in range(A.size):
-...     print(A.item(i))
-0.2446289
-0.5419922
-0.09643555
--0.90722656
-1.1806641
-0.24389648
-0.5234375
-1.0390625
->>> print(A.item(0, 1, 1))
--0.90722656
-```.
-
-```Mojo
-item(self, *index: Int) -> ref [MutableAnyOrigin] SIMD[dtype, 1]
+item(self, *index: Int) -> SIMD[dtype, 1]
 ```  
 Summary  
   
@@ -2410,25 +1944,53 @@ Args:
 - \*index: The coordinates of the item.
 
 
-If one index is given, get the i-th item of the array (not buffer).
+If one index is given, get the i-th item of the array.
 It first scans over the first row, even it is a colume-major array.
 
 If more than one index is given, the length of the indices must match
 the number of dimensions of the array.
 
 Example:
+```console
+> var A = nm.NDArray[dtype](3, 3, random=True, order="F")
+> print(A)
+[[      14      -4      -48     ]
+[      97      112     -40     ]
+[      -59     -94     66      ]]
+2-D array  Shape: [3, 3]  DType: int8
+
+> for i in A:
+>     print(i)  # Return rows
+[       14      -4      -48     ]
+1-D array  Shape: [3]  DType: int8
+[       97      112     -40     ]
+1-D array  Shape: [3]  DType: int8
+[       -59     -94     66      ]
+1-D array  Shape: [3]  DType: int8
+
+> for i in range(A.size()):
+>    print(A.item(i))  # Return 0-d arrays
+c strides Stride: [3, 1]
+14
+c strides Stride: [3, 1]
+-4
+c strides Stride: [3, 1]
+-48
+c strides Stride: [3, 1]
+97
+c strides Stride: [3, 1]
+112
+c strides Stride: [3, 1]
+-40
+c strides Stride: [3, 1]
+-59
+c strides Stride: [3, 1]
+-94
+c strides Stride: [3, 1]
+66
+==============================
 ```
->>> var A = nm.random.randn[nm.f16](2, 2, 2)
->>> A = A.reshape(A.shape, order="F")
->>> print(A)
-[[[     0.2446289       0.5419922       ]
-  [     0.09643555      -0.90722656     ]]
- [[     1.1806641       0.24389648      ]
-  [     0.5234375       1.0390625       ]]]
-3-D array  Shape: [2, 2, 2]  DType: float16  order: F
->>> print(A.item(0, 1, 1))
--0.90722656
-```.
+
 #### itemset
 
 
@@ -2538,63 +2100,16 @@ Args:
 
 
 ```Mojo
-prod(self) -> SIMD[dtype, 1]
-```  
-Summary  
-  
-Product of all array elements. Returns:     Scalar.  
-  
-Args:  
-
-- self
-
-
-```Mojo
 prod(self, axis: Int) -> Self
 ```  
 Summary  
   
-Product of array elements over a given axis. Args:     axis: The axis along which the product is performed. Returns:     An NDArray.  
+Product of array elements over a given axis. Args:     array: NDArray.     axis: The axis along which the product is performed. Returns:     An NDArray.  
   
 Args:  
 
 - self
 - axis
-
-#### reshape
-
-
-```Mojo
-reshape(self, shape: NDArrayShape, order: String = String("C")) -> Self
-```  
-Summary  
-  
-Returns an array of the same data with a new shape.  
-  
-Args:  
-
-- self
-- shape: Shape of returned array.
-- order: Order of the array - Row major `C` or Column major `F`. Default: String("C")
-
-#### resize
-
-
-```Mojo
-resize(mut self, shape: NDArrayShape)
-```  
-Summary  
-  
-In-place change shape and size of array.  
-  
-Args:  
-
-- self
-- shape: Shape after resize.
-
-
-Notes:
-To returns a new array, use `reshape`.
 
 #### round
 
@@ -2649,18 +2164,6 @@ See `numojo.sorting.sort` for more information.
 
 
 ```Mojo
-sum(self) -> SIMD[dtype, 1]
-```  
-Summary  
-  
-Sum of all array elements. Returns:     Scalar.  
-  
-Args:  
-
-- self
-
-
-```Mojo
 sum(self, axis: Int) -> Self
 ```  
 Summary  
@@ -2686,20 +2189,6 @@ Args:
 
 - self
 
-#### to_numpy
-
-
-```Mojo
-to_numpy(self) -> PythonObject
-```  
-Summary  
-  
-Convert to a numpy array.  
-  
-Args:  
-
-- self
-
 #### trace
 
 
@@ -2717,6 +2206,22 @@ Args:
 - axis1: First axis. Default: 0
 - axis2: Second axis. Default: 1
 
+#### reshape
+
+
+```Mojo
+reshape(mut self, *shape: Int, *, order: String = String("C"))
+```  
+Summary  
+  
+Reshapes the NDArray to given Shape.  
+  
+Args:  
+
+- self
+- \*shape: Variadic list of shape.
+- order: Order of the array - Row major `C` or Column major `F`. Default: String("C")
+
 #### unsafe_ptr
 
 
@@ -2726,6 +2231,20 @@ unsafe_ptr(self) -> UnsafePointer[SIMD[dtype, 1]]
 Summary  
   
 Retreive pointer without taking ownership.  
+  
+Args:  
+
+- self
+
+#### to_numpy
+
+
+```Mojo
+to_numpy(self) -> PythonObject
+```  
+Summary  
+  
+Convert to a numpy array.  
   
 Args:  
 

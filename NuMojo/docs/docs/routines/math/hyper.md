@@ -7,24 +7,6 @@
 ##  Module Summary
   
 Implements Hyperbolic functions for arrays.
-## arccosh
-
-
-```Mojo
-arccosh[dtype: DType](A: Matrix[dtype]) -> Matrix[dtype]
-```  
-Summary  
-  
-  
-  
-Parameters:  
-
-- dtype
-  
-Args:  
-
-- A
-
 ## acosh
 
 
@@ -44,40 +26,6 @@ Args:
 
 - array: An Array.
 
-
-```Mojo
-acosh[dtype: DType](A: Matrix[dtype]) -> Matrix[dtype]
-```  
-Summary  
-  
-  
-  
-Parameters:  
-
-- dtype
-  
-Args:  
-
-- A
-
-## arcsinh
-
-
-```Mojo
-arcsinh[dtype: DType](A: Matrix[dtype]) -> Matrix[dtype]
-```  
-Summary  
-  
-  
-  
-Parameters:  
-
-- dtype
-  
-Args:  
-
-- A
-
 ## asinh
 
 
@@ -91,45 +39,11 @@ Apply asinh also known as inverse hyperbolic sine .
 Parameters:  
 
 - dtype: The element type.
-- backend: Sets utility function origin, defaults to `Vectorized. Defualt: `Vectorized`
+- backend: Sets utility function origin, defualts to `Vectorized. Defualt: `Vectorized`
   
 Args:  
 
 - array: An Array.
-
-
-```Mojo
-asinh[dtype: DType](A: Matrix[dtype]) -> Matrix[dtype]
-```  
-Summary  
-  
-  
-  
-Parameters:  
-
-- dtype
-  
-Args:  
-
-- A
-
-## arctanh
-
-
-```Mojo
-arctanh[dtype: DType](A: Matrix[dtype]) -> Matrix[dtype]
-```  
-Summary  
-  
-  
-  
-Parameters:  
-
-- dtype
-  
-Args:  
-
-- A
 
 ## atanh
 
@@ -144,27 +58,11 @@ Apply atanh also known as inverse hyperbolic tangent .
 Parameters:  
 
 - dtype: The element type.
-- backend: Sets utility function origin, defaults to `Vectorized. Defualt: `Vectorized`
+- backend: Sets utility function origin, defualts to `Vectorized. Defualt: `Vectorized`
   
 Args:  
 
 - array: An Array.
-
-
-```Mojo
-atanh[dtype: DType](A: Matrix[dtype]) -> Matrix[dtype]
-```  
-Summary  
-  
-  
-  
-Parameters:  
-
-- dtype
-  
-Args:  
-
-- A
 
 ## cosh
 
@@ -179,27 +77,11 @@ Apply cosh also known as hyperbolic cosine .
 Parameters:  
 
 - dtype: The element type.
-- backend: Sets utility function origin, defaults to `Vectorized. Defualt: `Vectorized`
+- backend: Sets utility function origin, defualts to `Vectorized. Defualt: `Vectorized`
   
 Args:  
 
 - array: An Array assumed to be in radian.
-
-
-```Mojo
-cosh[dtype: DType](A: Matrix[dtype]) -> Matrix[dtype]
-```  
-Summary  
-  
-  
-  
-Parameters:  
-
-- dtype
-  
-Args:  
-
-- A
 
 ## sinh
 
@@ -214,27 +96,11 @@ Apply sin also known as hyperbolic sine .
 Parameters:  
 
 - dtype: The element type.
-- backend: Sets utility function origin, defaults to `Vectorized. Defualt: `Vectorized`
+- backend: Sets utility function origin, defualts to `Vectorized. Defualt: `Vectorized`
   
 Args:  
 
 - array: An Array assumed to be in radian.
-
-
-```Mojo
-sinh[dtype: DType](A: Matrix[dtype]) -> Matrix[dtype]
-```  
-Summary  
-  
-  
-  
-Parameters:  
-
-- dtype
-  
-Args:  
-
-- A
 
 ## tanh
 
@@ -249,24 +115,8 @@ Apply tan also known as hyperbolic tangent .
 Parameters:  
 
 - dtype: The element type.
-- backend: Sets utility function origin, defaults to `Vectorized. Defualt: `Vectorized`
+- backend: Sets utility function origin, defualts to `Vectorized. Defualt: `Vectorized`
   
 Args:  
 
 - array: An Array assumed to be in radian.
-
-
-```Mojo
-tanh[dtype: DType](A: Matrix[dtype]) -> Matrix[dtype]
-```  
-Summary  
-  
-  
-  
-Parameters:  
-
-- dtype
-  
-Args:  
-
-- A

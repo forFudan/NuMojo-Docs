@@ -11,19 +11,30 @@
 
 
 ```Mojo
-prod[dtype: DType](A: NDArray[dtype]) -> SIMD[dtype, 1]
+prod(array: NDArray[dtype], axis: Int = 0) -> NDArray[dtype]
 ```  
 Summary  
   
-Returns products of all items in the array.  
-  
-Parameters:  
-
-- dtype
+Product of array elements over a given axis.  
   
 Args:  
 
-- A: NDArray.
+- array: NDArray.
+- axis: The axis along which the product is performed. Default: 0
+
+## prodall
+
+
+```Mojo
+prodall(array: NDArray[dtype]) -> SIMD[dtype, 1]
+```  
+Summary  
+  
+Product of all items in the array.  
+  
+Args:  
+
+- array: NDArray.
 
 
 Example:
@@ -34,148 +45,24 @@ Example:
 [      0.034572109580039978    0.52970021963119507     0.007698186207562685    ]]
 2-D array  Shape: [3, 3]  DType: float32
 
-> print(nm.prod(A))
+> print(nm.math.stats.prodall(A))
 6.1377261317829834e-07
 ```
 
-
-```Mojo
-prod[dtype: DType](A: NDArray[dtype], owned axis: Int) -> NDArray[dtype]
-```  
-Summary  
-  
-Returns products of array elements over a given axis.  
-  
-Parameters:  
-
-- dtype
-  
-Args:  
-
-- A: NDArray.
-- axis: The axis along which the product is performed.
-
-
-```Mojo
-prod[dtype: DType](A: Matrix[dtype]) -> SIMD[dtype, 1]
-```  
-Summary  
-  
-Product of all items in the Matrix.  
-  
-Parameters:  
-
-- dtype
-  
-Args:  
-
-- A: Matrix.
-
-
-```Mojo
-prod[dtype: DType](A: Matrix[dtype], axis: Int) -> Matrix[dtype]
-```  
-Summary  
-  
-Product of items in a Matrix along the axis.  
-  
-Parameters:  
-
-- dtype
-  
-Args:  
-
-- A: Matrix.
-- axis: 0 or 1.
-
-
-Example:
-```mojo
-from numojo import Matrix
-var A = Matrix.rand(shape=(100, 100))
-print(mat.prod(A, axis=0))
-print(mat.prod(A, axis=1))
-```
 ## cumprod
 
 
 ```Mojo
-cumprod[dtype: DType](A: NDArray[dtype]) -> NDArray[dtype]
+cumprod[dtype: DType = float64](array: NDArray[dtype]) -> SIMD[dtype, 1]
 ```  
 Summary  
   
-Returns cumprod of all items of an array. The array is flattened before cumprod.  
+Product of all items in an array.  
   
 Parameters:  
 
-- dtype: The element type.
+- dtype: The element type. Defualt: `float64`
   
 Args:  
 
-- A: NDArray.
-
-
-```Mojo
-cumprod[dtype: DType](owned A: NDArray[dtype], owned axis: Int) -> NDArray[dtype]
-```  
-Summary  
-  
-Returns cumprod of array by axis.  
-  
-Parameters:  
-
-- dtype: The element type.
-  
-Args:  
-
-- A: NDArray.
-- axis: Axis.
-
-
-```Mojo
-cumprod[dtype: DType](owned A: Matrix[dtype]) -> Matrix[dtype]
-```  
-Summary  
-  
-Cumprod of flattened matrix.  
-  
-Parameters:  
-
-- dtype
-  
-Args:  
-
-- A: Matrix.
-
-
-Example:
-```mojo
-from numojo import Matrix
-var A = Matrix.rand(shape=(100, 100))
-print(mat.cumprod(A))
-```
-
-```Mojo
-cumprod[dtype: DType](owned A: Matrix[dtype], axis: Int) -> Matrix[dtype]
-```  
-Summary  
-  
-Cumprod of Matrix along the axis.  
-  
-Parameters:  
-
-- dtype
-  
-Args:  
-
-- A: Matrix.
-- axis: 0 or 1.
-
-
-Example:
-```mojo
-from numojo import Matrix
-var A = Matrix.rand(shape=(100, 100))
-print(mat.cumprod(A, axis=0))
-print(mat.cumprod(A, axis=1))
-```
+- array: An NDArray.

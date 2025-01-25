@@ -11,7 +11,7 @@
             "kind": "alias",
             "name": "__version__",
             "summary": "",
-            "value": "\"V0.2\""
+            "value": "\"V0.4\""
           },
           {
             "deprecated": "",
@@ -4138,7 +4138,7 @@
                         "async": false,
                         "constraints": "",
                         "deprecated": "",
-                        "description": "```\nfn main() raises:\n    var A = NDArray[DType.int8](List[Scalar[DType.int8]](14,97,-59,-4,112,), shape=List[Int](5,))\n    print(repr(A))\n```\n\nIt prints what can be used to construct the array itself:\n\n```console\nNDArray[DType.int8](List[Scalar[DType.int8]](14,97,-59,-4,112,), shape=List[Int](5,))\n```",
+                        "description": "",
                         "isDef": false,
                         "isStatic": false,
                         "kind": "function",
@@ -4149,7 +4149,7 @@
                         "returnType": "String",
                         "returnsDoc": "",
                         "signature": "__repr__(self) -> String",
-                        "summary": "Compute the \"official\" string representation of NDArray. Example:"
+                        "summary": "Compute the \"official\" string representation of NDArray. An example is: ``` fn main() raises:     var A = NDArray[DType.int8](List[Scalar[DType.int8]](14,97,-59,-4,112,), shape=List[Int](5,))     print(repr(A)) ``` It prints what can be used to construct the array itself: ```console NDArray[DType.int8](List[Scalar[DType.int8]](14,97,-59,-4,112,), shape=List[Int](5,)) ```."
                       }
                     ]
                   },

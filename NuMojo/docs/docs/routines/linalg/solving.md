@@ -65,7 +65,7 @@ Find the inverse of a non-singular, row-major matrix.
   
 Parameters:  
 
-- dtype: Data type of the inverse matrix.
+- dtype: Data type of the inversed matrix.
   
 Args:  
 
@@ -78,22 +78,61 @@ an identity matrix.
 The speed is faster than numpy for matrices smaller than 100x100,
 and is slower for larger matrices.
 
+## inv_raw
+
 
 ```Mojo
-inv[dtype: DType](A: Matrix[dtype]) -> Matrix[dtype]
+inv_raw[dtype: DType](array: NDArray[dtype]) -> NDArray[dtype]
 ```  
 Summary  
   
-Inverse of matrix.  
+Find the inverse of a non-singular, square matrix.  
   
 Parameters:  
 
-- dtype
+- dtype: Data type of the inversed matrix.
   
 Args:  
 
-- A
+- array: Input matrix. It should be non-singular and square.
 
+
+WARNING: This function is slower than `inv`.
+as it does not adopt parallelization by using raw methods.
+
+An example goes as follows:
+
+```
+import numojo as nm
+fn main() raises:
+    var A = nm.NDArray("[[1,0,1], [0,2,1], [1,1,1]]")
+    var B = nm.math.linalg.solver.inv_raw(A)
+    print("Original matrix:")
+    print(A)
+    print("Reversed matrix:")
+    print(B)
+    print("Verify whether AB = I:")
+    print(A @ B)
+```
+```console
+Original matrix:
+[[      1.0     0.0     1.0     ]
+ [      0.0     2.0     1.0     ]
+ [      1.0     1.0     1.0     ]]
+2-D array  Shape: [3, 3]  DType: float64
+Reversed matrix:
+[[      -1.0    -1.0    2.0     ]
+ [      -1.0    0.0     1.0     ]
+ [      2.0     1.0     -2.0    ]]
+2-D array  Shape: [3, 3]  DType: float64
+Verify whether AB = I:
+[[      1.0     0.0     0.0     ]
+ [      0.0     1.0     0.0     ]
+ [      0.0     0.0     1.0     ]]
+2-D array  Shape: [3, 3]  DType: float64
+```
+
+TODO: Optimize the speed.
 ## inv_lu
 
 
@@ -106,7 +145,7 @@ Find the inverse of a non-singular, row-major matrix.
   
 Parameters:  
 
-- dtype: Data type of the inverse matrix.
+- dtype: Data type of the inversed matrix.
   
 Args:  
 
@@ -121,41 +160,6 @@ and is slower for larger matrices.
 TODO: Fix the issues in parallelization.
 `AX = I` where `I` is an identity matrix.
 
-## lstsq
-
-
-```Mojo
-lstsq[dtype: DType](X: Matrix[dtype], y: Matrix[dtype]) -> Matrix[dtype]
-```  
-Summary  
-  
-Caclulate the OLS estimates.  
-  
-Parameters:  
-
-- dtype
-  
-Args:  
-
-- X
-- y
-
-
-Example:
-```mojo
-from numojo import Matrix
-X = Matrix.rand((1000000, 5))
-y = Matrix.rand((1000000, 1))
-print(mat.lstsq(X, y))
-```
-```console
-[[0.18731374756029967]
- [0.18821352688798607]
- [0.18717162200411439]
- [0.1867570378683612]
- [0.18828715376701158]]
-Size: 5x1  DType: float64
-```
 ## solve
 
 
@@ -207,38 +211,3 @@ fn main() raises:
 ```
 
 The example is also a way to calculate inverse of matrix.
-
-```Mojo
-solve[dtype: DType](A: Matrix[dtype], Y: Matrix[dtype]) -> Matrix[dtype]
-```  
-Summary  
-  
-Solve `AX = Y` using LUP decomposition.  
-  
-Parameters:  
-
-- dtype
-  
-Args:  
-
-- A
-- Y
-
-## solve_lu
-
-
-```Mojo
-solve_lu[dtype: DType](A: Matrix[dtype], Y: Matrix[dtype]) -> Matrix[dtype]
-```  
-Summary  
-  
-Solve `AX = Y` using LU decomposition.  
-  
-Parameters:  
-
-- dtype
-  
-Args:  
-
-- A
-- Y

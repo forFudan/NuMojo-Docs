@@ -76,11 +76,11 @@ Args:
 
 
 ```Mojo
-reshape[dtype: DType](owned A: NDArray[dtype], shape: NDArrayShape, order: String = String("C")) -> NDArray[dtype]
+reshape[dtype: DType](mut array: NDArray[dtype], shape: VariadicList[Int], order: String = String("C"))
 ```  
 Summary  
   
-    Returns an array of the same data with a new shape.  
+    Reshapes the NDArray to given Shape.  
   
 Parameters:  
 
@@ -88,15 +88,15 @@ Parameters:
   
 Args:  
 
-- A: A NDArray.
-- shape: New shape.
-- order: "C" or "F". Read in this order from the original array and write in this order into the new array. Default: String("C")
+- array: A NDArray.
+- shape: Variadic integers of shape.
+- order: Order of the array - Row major `C` or Column major `F`. Default: String("C")
 
 ## ravel
 
 
 ```Mojo
-ravel[dtype: DType](owned A: NDArray[dtype], order: String = String("C")) -> NDArray[dtype]
+ravel[dtype: DType](mut array: NDArray[dtype], order: String = String("C"))
 ```  
 Summary  
   
@@ -108,12 +108,27 @@ Parameters:
   
 Args:  
 
-- A: NDArray.
-- order: The order to flatten the array. Default: String("C")
+- array
+- order Default: String("C")
+
+## flatten
 
 
-Return:
-    A contiguous flattened array.
+```Mojo
+flatten[dtype: DType](array: NDArray[dtype]) -> NDArray[dtype]
+```  
+Summary  
+  
+Flattens the NDArray.  
+  
+Parameters:  
+
+- dtype: Dataype of the NDArray elements.
+  
+Args:  
+
+- array: A NDArray.
+
 ## transpose
 
 
@@ -138,17 +153,17 @@ If `axes` is not given, it is equal to flipping the axes.
 ```mojo
 import numojo as nm
 var A = nm.random.rand(2,3,4,5)
-print(nm.transpose(A))  # A is a 4darray.
-print(nm.transpose(A, axes=List(3,2,1,0)))
+nm.transpose(A)  # A is a 4darray.
+nm.transpose(A, axes=List(3,2,1,0))
 ```
 
 Examples.
 ```mojo
 import numojo as nm
 # A is a 2darray
-print(nm.transpose(A, axes=List(0, 1)))  # equal to transpose of matrix
+nm.transpose(A, axes=List(0, 1))  # equal to transpose of matrix
 # A is a 3darray
-print(nm.transpose(A, axes=List(2, 1, 0)))  # transpose 0-th and 2-th dimensions
+nm.transpose(A, axes=List(2, 1, 0))  # transpose 0-th and 2-th dimensions
 ```
 
 ```Mojo
@@ -166,31 +181,15 @@ Args:
 
 - A
 
-
-```Mojo
-transpose[dtype: DType](A: Matrix[dtype]) -> Matrix[dtype]
-```  
-Summary  
-  
-Transpose of matrix.  
-  
-Parameters:  
-
-- dtype
-  
-Args:  
-
-- A
-
 ## flip
 
 
 ```Mojo
-flip[dtype: DType](owned A: NDArray[dtype]) -> NDArray[dtype]
+flip[dtype: DType](array: NDArray[dtype]) -> NDArray[dtype]
 ```  
 Summary  
   
-Returns flipped array and keep the shape.  
+Flips the NDArray along the given axis.  
   
 Parameters:  
 
@@ -198,21 +197,4 @@ Parameters:
   
 Args:  
 
-- A: A NDArray.
-
-
-```Mojo
-flip[dtype: DType](owned A: NDArray[dtype], owned axis: Int) -> NDArray[dtype]
-```  
-Summary  
-  
-Returns flipped array along the given axis.  
-  
-Parameters:  
-
-- dtype: DType.
-  
-Args:  
-
-- A: A NDArray.
-- axis: Axis along which to flip.
+- array: A NDArray.

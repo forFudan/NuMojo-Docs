@@ -7,24 +7,6 @@
 ##  Module Summary
   
 Implements Trigonometry functions for arrays.
-## arccos
-
-
-```Mojo
-arccos[dtype: DType](A: Matrix[dtype]) -> Matrix[dtype]
-```  
-Summary  
-  
-  
-  
-Parameters:  
-
-- dtype
-  
-Args:  
-
-- A
-
 ## acos
 
 
@@ -38,45 +20,11 @@ Apply acos also known as inverse cosine .
 Parameters:  
 
 - dtype: The element type.
-- backend: Sets utility function origin, defaults to `Vectorized. Defualt: `Vectorized`
+- backend: Sets utility function origin, defualts to `Vectorized. Defualt: `Vectorized`
   
 Args:  
 
 - array: An Array.
-
-
-```Mojo
-acos[dtype: DType](A: Matrix[dtype]) -> Matrix[dtype]
-```  
-Summary  
-  
-  
-  
-Parameters:  
-
-- dtype
-  
-Args:  
-
-- A
-
-## arcsin
-
-
-```Mojo
-arcsin[dtype: DType](A: Matrix[dtype]) -> Matrix[dtype]
-```  
-Summary  
-  
-  
-  
-Parameters:  
-
-- dtype
-  
-Args:  
-
-- A
 
 ## asin
 
@@ -91,45 +39,11 @@ Apply asin also known as inverse sine .
 Parameters:  
 
 - dtype: The element type.
-- backend: Sets utility function origin, defaults to `Vectorized. Defualt: `Vectorized`
+- backend: Sets utility function origin, defualts to `Vectorized. Defualt: `Vectorized`
   
 Args:  
 
 - array: An Array.
-
-
-```Mojo
-asin[dtype: DType](A: Matrix[dtype]) -> Matrix[dtype]
-```  
-Summary  
-  
-  
-  
-Parameters:  
-
-- dtype
-  
-Args:  
-
-- A
-
-## arctan
-
-
-```Mojo
-arctan[dtype: DType](A: Matrix[dtype]) -> Matrix[dtype]
-```  
-Summary  
-  
-  
-  
-Parameters:  
-
-- dtype
-  
-Args:  
-
-- A
 
 ## atan
 
@@ -144,27 +58,11 @@ Apply atan also known as inverse tangent .
 Parameters:  
 
 - dtype: The element type.
-- backend: Sets utility function origin, defaults to `Vectorized. Defualt: `Vectorized`
+- backend: Sets utility function origin, defualts to `Vectorized. Defualt: `Vectorized`
   
 Args:  
 
 - array: An Array.
-
-
-```Mojo
-atan[dtype: DType](A: Matrix[dtype]) -> Matrix[dtype]
-```  
-Summary  
-  
-  
-  
-Parameters:  
-
-- dtype
-  
-Args:  
-
-- A
 
 ## atan2
 
@@ -179,7 +77,7 @@ Apply atan2 also known as inverse tangent. [atan2 wikipedia](https://en.wikipedi
 Parameters:  
 
 - dtype: The element type.
-- backend: Sets utility function origin, defaults to `Vectorized. Defualt: `Vectorized`
+- backend: Sets utility function origin, defualts to `Vectorized. Defualt: `Vectorized`
   
 Constraints:
 
@@ -203,27 +101,11 @@ Apply cos also known as cosine.
 Parameters:  
 
 - dtype: The element type.
-- backend: Sets utility function origin, defaults to `Vectorized. Defualt: `Vectorized`
+- backend: Sets utility function origin, defualts to `Vectorized. Defualt: `Vectorized`
   
 Args:  
 
 - array: An Array assumed to be in radian.
-
-
-```Mojo
-cos[dtype: DType](A: Matrix[dtype]) -> Matrix[dtype]
-```  
-Summary  
-  
-  
-  
-Parameters:  
-
-- dtype
-  
-Args:  
-
-- A
 
 ## sin
 
@@ -238,27 +120,11 @@ Apply sin also known as sine .
 Parameters:  
 
 - dtype: The element type.
-- backend: Sets utility function origin, defaults to `Vectorized. Defualt: `Vectorized`
+- backend: Sets utility function origin, defualts to `Vectorized. Defualt: `Vectorized`
   
 Args:  
 
 - array: An Array assumed to be in radian.
-
-
-```Mojo
-sin[dtype: DType](A: Matrix[dtype]) -> Matrix[dtype]
-```  
-Summary  
-  
-  
-  
-Parameters:  
-
-- dtype
-  
-Args:  
-
-- A
 
 ## tan
 
@@ -273,27 +139,11 @@ Apply tan also known as tangent .
 Parameters:  
 
 - dtype: The element type.
-- backend: Sets utility function origin, defaults to `Vectorized. Defualt: `Vectorized`
+- backend: Sets utility function origin, defualts to `Vectorized. Defualt: `Vectorized`
   
 Args:  
 
 - array: An Array assumed to be in radian.
-
-
-```Mojo
-tan[dtype: DType](A: Matrix[dtype]) -> Matrix[dtype]
-```  
-Summary  
-  
-  
-  
-Parameters:  
-
-- dtype
-  
-Args:  
-
-- A
 
 ## hypot
 
@@ -308,7 +158,7 @@ Apply hypot also known as hypotenuse which finds the longest section of a right 
 Parameters:  
 
 - dtype: The element type.
-- backend: Sets utility function origin, defaults to `Vectorized. Defualt: `Vectorized`
+- backend: Sets utility function origin, defualts to `Vectorized. Defualt: `Vectorized`
   
 Constraints:
 
@@ -332,7 +182,7 @@ Apply hypot also known as hypotenuse which finds the longest section of a right 
 Parameters:  
 
 - dtype: The element type.
-- backend: Sets utility function origin, defaults to `Vectorized. Defualt: `Vectorized`
+- backend: Sets utility function origin, defualts to `Vectorized. Defualt: `Vectorized`
   
 Constraints:
 

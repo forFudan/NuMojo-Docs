@@ -3,7 +3,7 @@ from mdutils.mdutils import MdUtils
 from mdutils import Html
 import os
 from pathlib import Path
-docs = json.load(open("../NuMojo/docs.json"))
+docs = json.load(open("docs.json"))
 
 def doc_func(func,mdfile:MdUtils,top_header=2):
     mdfile.new_header(top_header,f"""{func["name"]}""")
